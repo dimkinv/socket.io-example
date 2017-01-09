@@ -25,6 +25,7 @@ application.controller("chatController", function ($scope) {
         $scope.$apply();
     });
 
+
     var events = {
         login: function () {
             socket.emit('user_login', {username: model.loginName})
@@ -33,7 +34,6 @@ application.controller("chatController", function ($scope) {
              socket.emit('send_message_to_server', {text: model.message})
         }
     };
-
 
     $scope.model = model;
     $scope.events = events;

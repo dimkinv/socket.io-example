@@ -42,3 +42,57 @@ server.listen(app.get('port'), function () {
     console.log("Express server listening on port " + app.get('port'));
 });
 
+function setSocketListeners(io) {
+//    io.sockets.on('connection', function (socket) {
+//        socket.on('send_message_to_server', function (data) {
+//            socket.get('username', function (err, name) {
+//                if (err) {
+//                    io.sockets.emit('send_message_to_clients', {text: data.text});
+//                    return;
+//                }
+//                io.sockets.emit('send_message_to_clients', {text: name + ': ' + data.text});
+//            });
+//        });
+//        socket.on('disconnect', function () {
+//            socket.get('username', function (err, name) {
+//                if (err) {
+//                    return;
+//                }
+//                delete users[name];
+//                io.sockets.emit('broadcast_users', _.keys(users));
+//            });
+//        });
+//        socket.on('user_login', function (data) {
+//            socket.set('username', data.username);
+//            users[data.username] = socket;
+//            io.sockets.emit('broadcast_users', _.keys(users));
+//        });
+//    });
+
+    io.sockets.on('connection', function (socket) {
+        socket.on('user_login', function (data) {
+            socket.set('username', data.username);
+            users[data.username] = socket;
+            io.sockets.emit('broadcast_users', _.keys(users));
+        });
+
+        socket.on('disconnect', function () {
+            socket.get('username', function (err, name) {
+                if (err) {
+                    return;
+                }
+                delete users[name];
+                io.sockets.emit('broadcast_users', _.keys(users));
+            });
+        });
+        socket.on('send_message_to_server', function (data) {
+            socket.get('username', function (err, name) {
+                if (err) {
+                    io.sockets.emit('send_message_to_clients', {text: data.text});
+                    return;
+                }
+                io.sockets.emit('send_message_to_clients', {text: name + ': ' + data.text});
+            });
+        });
+    });
+}
